@@ -6,7 +6,47 @@ function main() {
     var canvas = document.getElementById('canvas');
     canvas.width = WIDTH;
     canvas.height = HEIGHT;
-  
+    $(canvas).on('click', (e) => {
+      add_point(e);
+    });
+    function add_point(e) {
+      //let color = ctx.getImageData(e.clientX - canvas.offsetLeft,  e.clientY, 1, 1).data;
+      // color = Array.from(color);
+      // color.splice(color.length - 1, 1);
+      // color = color.join(' ');
+      // console.log('color :>> ', color);
+      //let c;
+      
+      // 'orange', 'blue', 'green', 'purple',
+      // switch(color){
+      //   case '128 0 128': // -фиолетовый
+      //   c = 3;
+      //   break;
+      //   case '0 0 255': // -синий
+      //   c = 1;
+      //   break;
+      //   case '255 165 0': // -желтый
+      //   c = 0;
+      //   break;
+      //   case '0 128 0': // -зеленый
+      //   c = 2;
+      //   break;
+      // }
+      var p = get_click_coords(canvas, e);
+      var neighbors = find_neighbors(p, state.points, state.k, state.metric);
+      var c = majority_vote(neighbors, state.num_classes);
+      state.points.push([p[0], p[1], c]);
+      console.log(neighbors);
+      redraw();
+      //var ctx = canvas.getContext('2d');
+     // ctx.beginPath();
+     console.log("mew",neighbors[0][0]);
+      ctx.arc(p[0], p[1], state.metric(neighbors[0],p), 0, 2 * Math.PI, false);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = '#003300';
+      ctx.stroke();
+     
+    }
     var ctx = canvas.getContext('2d');
     ctx.height = HEIGHT;
     ctx.width = WIDTH;
@@ -110,6 +150,7 @@ function main() {
       dragging_point = idx;
     });
     $(canvas).mousemove(function(e) {
+      console.log(dragging_point);
       if (dragging_point === null) return;
       var p = get_click_coords(canvas, e);
       state.points[dragging_point][0] = p[0];
@@ -117,6 +158,8 @@ function main() {
       redraw('fast');
     });
     $(canvas).mouseup(function() { 
+      console.log(dragging_point);
+      if (dragging_point === null) return;
       dragging_point = null;
       redraw();
     })
@@ -194,6 +237,7 @@ function main() {
   function l2_distance(p1, p2) {
     var dx = p1[0] - p2[0];
     var dy = p1[1] - p2[1];
+
     return Math.sqrt(dx * dx + dy * dy);
   }
   
