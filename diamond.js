@@ -8,7 +8,7 @@ if (window.CanvasRenderingContext2D) {
       this.lineTo(x+width, y);
       this.lineTo(x, y-height);
       this.lineTo(x-width, y);
-      this.lineTo(x, y+height);
+      this.lineTo(x, y+height); 
       this.closePath();  
     };
   }
