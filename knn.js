@@ -47,10 +47,10 @@ function main() {
   ctx.height = HEIGHT;
   ctx.width = WIDTH;
 
-  var num_classes = 3;
-  var num_points = 10;
-  var metric = l2_distance;
-  var k = 1;
+  // var num_classes = 3;
+  // var num_points = 10;
+  // var metric = l2_distance;
+  // var k = 1;
 
   var state = {
     num_classes: 4,
@@ -68,6 +68,14 @@ function main() {
 
   function gen_points() {
     state.points = generate_cluster_points(ctx, state.num_classes, state.num_points, state.cluster_std);
+    let cls = [0, 0, 0, 0];
+    state.points.forEach(item => {
+      $(`.cls-num-${item[2]} span`).text((i, _str) => {
+        cls[item[2]] += 1;
+        return cls[item[2]];
+      })
+    });
+    console.log('state.points :>> ', cls);
   }
   gen_points();
 
@@ -93,15 +101,14 @@ function main() {
   });
 
   // Handlers for buttons that set K
-  for (var k = 1; k <= 7; k++) {
-    (function () {
-      var kk = k;
-      $('#k-' + k + '-btn').click(function () {
-        state.k = kk;
-        redraw();
-      });
-    })();
-  }
+  (function() {
+    // var kk = 1;
+    $('#k-' + 1 + '-btn').on('input', function(e) {
+      state.k = e.target.value;
+      $('#span-curr-num').text(e.target.value);
+      redraw();
+    });
+  })();
 
   // Handlers for buttons that set number of classes
   for (var c = 2; c <= 5; c++) {
