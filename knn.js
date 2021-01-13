@@ -35,30 +35,14 @@ function main() {
     //var ctx = canvas.getContext('2d');
     // ctx.beginPath();
     var p = get_click_coords(canvas, e);
-    makeBound(p);
-  }
-  function makeBound(p) {
     var neighbors = find_neighbors(p, state.points, state.k, state.metric);
     var c = majority_vote(neighbors, state.num_classes);
-    ctx.beginPath();
-    ctx.globalAlpha = 1.0;
-    ctx.fillStyle = state.colors[c];
-    console.log(c);
-    ctx.arc(p[0], p[1], 5, 0, 2 * Math.PI);
-    ctx.fill();
-    // ctx.lineWidth = 1;
-    // ctx.strokeStyle = '#003300';
-    // ctx.stroke();
-    let radius = state.metric(neighbors.pop(), p);
-    if (state.metric == l2_distance) {
-      ctx.beginPath();
-      ctx.arc(p[0], p[1], radius, 0, 2 * Math.PI);
-    }
-    else if (state.metric == l1_distance)
-      ctx.diamond(p[0], p[1], radius, radius);
-    ctx.stroke();
+    p.push(c);
+    state.dummies.push(p);
+    redraw();
 
   }
+
   var ctx = canvas.getContext('2d');
   ctx.height = HEIGHT;
   ctx.width = WIDTH;
@@ -79,6 +63,7 @@ function main() {
     ],
     small_step: 3,
     big_step: 10,
+    dummies: []
   };
 
   function gen_points() {
@@ -92,6 +77,7 @@ function main() {
     ctx.clearRect(0, 0, ctx.width, ctx.height);
     draw_boundaries(ctx, state, step);
     draw_points(ctx, state.points, state.colors);
+    draw_dummies(ctx, state.dummies, state.colors, state.k, state.metric);
   }
   redraw();
 
@@ -244,7 +230,24 @@ function draw_points(ctx, points, colors) {
     ctx.fill();
   }
 }
+function draw_dummies(ctx, points, colors, k, metric) {
+  draw_points(ctx, points, colors);
+  makeBound(points.slice(-1), metric);
+}
+function makeBound(p, metric) {
+  // ctx.lineWidth = 1;
+  // ctx.strokeStyle = '#003300';
+  // ctx.stroke();
+  let radius = metric(neighbors.pop(), p);
+  if (metric == l2_distance) {
+    ctx.beginPath();
+    ctx.arc(p[0], p[1], radius, 0, 2 * Math.PI);
+  }
+  else if (metric == l1_distance)
+    ctx.diamond(p[0], p[1], radius, radius);
+  ctx.stroke();
 
+}
 
 function l2_distance(p1, p2) {
   var dx = p1[0] - p2[0];
@@ -259,7 +262,11 @@ function l1_distance(p1, p2) {
   var dy = p1[1] - p2[1];
   return Math.abs(dx) + Math.abs(dy);
 }
-
+function l_inf(p1, p2) {
+  var dx = p1[0] - p2[0];
+  var dy = p1[1] - p2[1];
+  return Math.abs(dx) + Math.abs(dy);
+}
 
 
 function find_neighbors(p, points, k, metric) {
