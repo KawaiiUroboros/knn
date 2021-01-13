@@ -238,7 +238,7 @@ function draw_points(ctx, points, colors) {
     var y = points[i][1];
     var c = points[i][2];
     ctx.beginPath();
-    ctx.globalAlpha = 1.0;
+    ctx.globalAlpha = 1.0; 
     ctx.fillStyle = c!==null ? colors[c]:'black';
     ctx.arc(x, y, 5, 0, 2 * Math.PI);
     ctx.fill();
