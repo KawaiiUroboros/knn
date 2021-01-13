@@ -70,7 +70,6 @@ function main() {
 
   function gen_points() {
     state.points = generate_cluster_points(ctx, state.num_classes, state.num_points, state.cluster_std);
-    state.dum_neigh = [];
     let cls = [0, 0, 0, 0];
     state.points.forEach(item => {
       $(`.cls-num-${item[2]} span`).text((i, _str) => {
@@ -88,8 +87,8 @@ function main() {
     ctx.clearRect(0, 0, ctx.width, ctx.height);
     draw_boundaries(ctx, state, step);
     draw_points(ctx, state.points, state.colors);
-    if(state.dummies.length!=0)
-    draw_dummies(ctx, state.dummies, state.colors, state.k, state.metric,state.dum_neigh);
+    if(state.dummies.length !== 0 || dragging_point !== null)
+      draw_dummies(ctx, state.dummies, state.colors, state.k, state.metric, state.dum_neigh);
   }
   redraw();
 
@@ -97,10 +96,12 @@ function main() {
   $('#l2-btn').click(function () {
     // state.metric = l2_distance;
     state.metric = l2_distance;
+    state.dummies = [];
     redraw();
   });
   $('#l1-btn').click(function () {
     state.metric = l1_distance;
+    state.dummies = [];
     redraw();
   });
 
@@ -244,15 +245,17 @@ function draw_points(ctx, points, colors) {
     ctx.stroke();
   }
 }
-function draw_dummies(ctx, points, colors, k, metric,neighbors) {
+function draw_dummies(ctx, points, colors, k, metric, neighbors) {
   draw_points(ctx, points, colors);
-  makeBound(ctx,points.slice(-1),points,k, metric,neighbors);
+  makeBound(ctx, points[points.length - 1], points,k, metric, neighbors);
 }
-function makeBound(ctx,p,points,k, metric,neighbors) {
+function makeBound(ctx, p, points, k, metric, neighbors) {
   // ctx.lineWidth = 1;
   // ctx.strokeStyle = '#003300';
   // ctx.stroke();
-  let radius = metric(neighbors.pop(), p);
+  let npop = neighbors.pop();
+  let radius = metric(npop, p);
+  
   if (metric == l2_distance) {
     ctx.beginPath();
     ctx.arc(p[0], p[1], radius, 0, 2 * Math.PI);
