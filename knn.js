@@ -87,7 +87,7 @@ function main() {
     ctx.clearRect(0, 0, ctx.width, ctx.height);
     draw_boundaries(ctx, state, step);
     draw_points(ctx, state.points, state.colors);
-    if(state.dummies.length !== 0 || dragging_point !== null)
+    if(dragging_point == null)
       draw_dummies(ctx, state.dummies, state.colors, state.k, state.metric, state.dum_neigh);
   }
   redraw();
@@ -111,6 +111,7 @@ function main() {
     $('#k-' + 1 + '-btn').on('input', function(e) {
       state.k = e.target.value;
       $('#span-curr-num').text(e.target.value);
+      state.dummies = [];
       redraw();
     });
   })();
@@ -121,6 +122,7 @@ function main() {
       var cc = c;
       $('#num-cls-' + c + '-btn').click(function () {
         state.num_classes = cc;
+        state.dummies = [];
         gen_points();
         redraw();
       });
@@ -137,6 +139,7 @@ function main() {
         console.log('here');
         state.num_points = num_points;
         gen_points();
+        state.dummies = [];
         redraw();
       });
     })();
@@ -247,15 +250,17 @@ function draw_points(ctx, points, colors) {
 }
 function draw_dummies(ctx, points, colors, k, metric, neighbors) {
   draw_points(ctx, points, colors);
+  if(points.length == 0 || neighbors==null)
+  return;
   makeBound(ctx, points[points.length - 1], points,k, metric, neighbors);
 }
 function makeBound(ctx, p, points, k, metric, neighbors) {
   // ctx.lineWidth = 1;
   // ctx.strokeStyle = '#003300';
   // ctx.stroke();
-  let npop = neighbors.pop();
+  let npop = neighbors[neighbors.length-1];
   let radius = metric(npop, p);
-  
+  console.log(neighbors);
   if (metric == l2_distance) {
     ctx.beginPath();
     ctx.arc(p[0], p[1], radius, 0, 2 * Math.PI);
