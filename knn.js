@@ -239,6 +239,9 @@ function draw_points(ctx, points, colors) {
     ctx.fillStyle = colors[c];
     ctx.arc(x, y, 5, 0, 2 * Math.PI);
     ctx.fill();
+
+    ctx.strokeStyle = "white";
+    ctx.stroke();
   }
 }
 function draw_dummies(ctx, points, colors, k, metric,neighbors) {
