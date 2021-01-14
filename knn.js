@@ -88,7 +88,7 @@ function main() {
     draw_boundaries(ctx, state, step);
     draw_points(ctx, state.points, state.colors);
     if(dragging_point == null)
-      draw_dummies(ctx, state.dummies, state.colors, state.k, state.metric, state.dum_neigh);
+      draw_dummies(ctx, state.dummies.slice(-1), state.colors, state.k, state.metric, state.dum_neigh);
   }
   redraw();
 
