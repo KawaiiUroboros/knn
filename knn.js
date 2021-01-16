@@ -53,9 +53,10 @@ function main() {
 
   var state = {
     num_classes: 4,
-    num_points: 40,
+    num_points: 60,
     cluster_std: 50,
     metric: l2_distance,
+    dataset: generate_cluster_points_circles,
     k: 1,
     colors: [
       'red', 'blue', 'green', 'purple', 'orange',
@@ -67,7 +68,7 @@ function main() {
   };
 
   function gen_points() {
-    state.points = generate_cluster_points(ctx, state.num_classes, state.num_points, state.cluster_std);
+    state.points = state.dataset(ctx, state.num_classes, state.num_points, state.cluster_std);
 
     let cls = [0, 0, 0, 0];
     state.points.forEach(item => {
@@ -100,6 +101,18 @@ function main() {
   $('#l1-btn').click(function () {
     state.metric = l1_distance;
     state.dummies = [];
+    redraw();
+  });
+
+  // Handlers for dataset buttons
+  $('#circles-btn').click(function () {
+    state.dataset = generate_cluster_points_circles;
+    gen_points();
+    redraw();
+  });
+  $('#moonshapes-btn').click(function () {
+    state.dataset = generate_cluster_points_moonshapes;
+    gen_points();
     redraw();
   });
 
@@ -209,24 +222,26 @@ function generate_uniform_points(ctx, num_classes, num_points) {
   return points;
 }
 
-function generate_cluster_points(ctx, num_classes, num_points, std) {
+function generate_cluster_points_moonshapes(ctx, num_classes, num_points, std) {
+  let shift = 150;
+  let center = WIDTH / num_classes - shift / num_classes;
+
   var centers = [];
-  for (var c = 0; c < num_classes; c++) {
-    var x = ctx.width * Math.random();
-    var y = ctx.height * Math.random();
+  for (let i = 0; i < num_classes; i++) {
+    let x = center + shift * i;
+    let y = HEIGHT / 2;
     centers.push([x, y]);
   }
 
   let points = [];
   for (let i = 0; i < num_points; i++) {
-    let pi = (2 * Math.random() * Math.PI);
     let c = Math.floor(num_classes * Math.random());
-    let x = Math.cos(pi) * (c + .5) * 70 + WIDTH  / 2;
-    let y = Math.sin(pi) * (c + .5) * 70 + HEIGHT / 2;
+    let nboo = c % 2 == 0 ? -1 : 1;
+    let pi = (nboo * Math.random() * Math.PI);
+    let x = Math.cos(pi) * 100 + centers[c][0];
+    let y = Math.sin(pi) * 100 + centers[c][1];
     points.push([x, y, c]);
   }
-  
-
   // // First generate random cluster centers
   // var centers = [];
   // for (var c = 0; c < num_classes; c++) {
@@ -246,7 +261,25 @@ function generate_cluster_points(ctx, num_classes, num_points, std) {
   return points;
 }
 
+function generate_cluster_points_circles(ctx, num_classes, num_points, std) {  
+  var centers = [];
+  for (let i = 0; i < num_classes; i++) {
+    let x = WIDTH / 2;
+    let y = HEIGHT / 2;
+    centers.push([x, y]);
+  }
 
+  let points = [];
+  for (let i = 0; i < num_points; i++) {
+    let c = Math.floor(num_classes * Math.random());
+    let pi = (2 * Math.random() * Math.PI);
+    let x = Math.cos(pi) * (c + .5) * 70 + centers[c][0];
+    let y = Math.sin(pi) * (c + .5) * 70 + centers[c][1];
+    points.push([x, y, c]);
+  }
+
+  return points;
+}
 function draw_points(ctx, points, colors) {
   for (var i = 0; i < points.length; i++) {
     var x = points[i][0];
