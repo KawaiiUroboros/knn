@@ -1,8 +1,6 @@
-
-
+var HEIGHT = 600;
+var WIDTH = 800;
 function main() {
-  var HEIGHT = 600;
-  var WIDTH = 800;
   var canvas = document.getElementById('canvas');
   canvas.width = WIDTH;
   canvas.height = HEIGHT;
@@ -70,6 +68,7 @@ function main() {
 
   function gen_points() {
     state.points = generate_cluster_points(ctx, state.num_classes, state.num_points, state.cluster_std);
+
     let cls = [0, 0, 0, 0];
     state.points.forEach(item => {
       $(`.cls-num-${item[2]} span`).text((i, _str) => {
@@ -77,7 +76,6 @@ function main() {
         return cls[item[2]];
       })
     });
-    console.log('state.points :>> ', cls);
   }
   gen_points();
 
@@ -212,7 +210,6 @@ function generate_uniform_points(ctx, num_classes, num_points) {
 }
 
 function generate_cluster_points(ctx, num_classes, num_points, std) {
-  // First generate random cluster centers
   var centers = [];
   for (var c = 0; c < num_classes; c++) {
     var x = ctx.width * Math.random();
@@ -220,14 +217,32 @@ function generate_cluster_points(ctx, num_classes, num_points, std) {
     centers.push([x, y]);
   }
 
-  // Now generate points near cluster centers
-  var points = [];
-  for (var i = 0; i < num_points; i++) {
-    var c = Math.floor(num_classes * Math.random());
-    var x = centers[c][0] + std * randn();
-    var y = centers[c][1] + std * randn();
+  let points = [];
+  for (let i = 0; i < num_points; i++) {
+    let pi = (2 * Math.random() * Math.PI);
+    let c = Math.floor(num_classes * Math.random());
+    let x = Math.cos(pi) * (c + .5) * 70 + WIDTH  / 2;
+    let y = Math.sin(pi) * (c + .5) * 70 + HEIGHT / 2;
     points.push([x, y, c]);
   }
+  
+
+  // // First generate random cluster centers
+  // var centers = [];
+  // for (var c = 0; c < num_classes; c++) {
+  //   var x = ctx.width * Math.random();
+  //   var y = ctx.height * Math.random();
+  //   centers.push([x, y]);
+  // }
+
+  // // Now generate points near cluster centers
+  // var points = [];
+  // for (var i = 0; i < num_points; i++) {
+  //   var c = Math.floor(num_classes * Math.random());
+  //   var x = centers[c][0] + std * randn();
+  //   var y = centers[c][1] + std * randn();
+  //   points.push([x, y, c]);
+  // }
   return points;
 }
 
