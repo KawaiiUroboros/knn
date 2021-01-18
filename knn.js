@@ -117,15 +117,15 @@ function main() {
   });
 
   // Handlers for buttons that set K
-  (function() {
-    // var kk = 1;
-    $('#k-' + 1 + '-btn').on('input', function(e) {
-      state.k = e.target.value;
-      $('#span-curr-num').text(e.target.value);
-      state.dummies = [];
-      redraw();
-    });
-  })();
+  for (var k = 1; k <= 7; k++) {
+    (function () {
+      var kk = k;
+      $('#k-' + k + '-btn').click(function () {
+        state.k = kk;
+        redraw();
+      });
+    })();
+  }
 
   // Handlers for buttons that set number of classes
   for (var c = 2; c <= 5; c++) {
