@@ -115,6 +115,11 @@ function main() {
     gen_points();
     redraw();
   });
+  $('#random-btn').click(function () {
+    state.dataset = generate_cluster_points_random;
+    gen_points();
+    redraw();
+  });
 
   // Handlers for buttons that set K
   for (var k = 1; k <= 7; k++) {
@@ -242,22 +247,7 @@ function generate_cluster_points_moonshapes(ctx, num_classes, num_points, std) {
     let y = Math.sin(pi) * 100 + centers[c][1];
     points.push([x, y, c]);
   }
-  // // First generate random cluster centers
-  // var centers = [];
-  // for (var c = 0; c < num_classes; c++) {
-  //   var x = ctx.width * Math.random();
-  //   var y = ctx.height * Math.random();
-  //   centers.push([x, y]);
-  // }
 
-  // // Now generate points near cluster centers
-  // var points = [];
-  // for (var i = 0; i < num_points; i++) {
-  //   var c = Math.floor(num_classes * Math.random());
-  //   var x = centers[c][0] + std * randn();
-  //   var y = centers[c][1] + std * randn();
-  //   points.push([x, y, c]);
-  // }
   return points;
 }
 
@@ -280,6 +270,27 @@ function generate_cluster_points_circles(ctx, num_classes, num_points, std) {
 
   return points;
 }
+
+function generate_cluster_points_random(ctx, num_classes, num_points, std) {
+  // First generate random cluster centers
+  var centers = [];
+  for (var c = 0; c < num_classes; c++) {
+    var x = ctx.width * Math.random();
+    var y = ctx.height * Math.random();
+    centers.push([x, y]);
+  }
+
+  // Now generate points near cluster centers
+  var points = [];
+  for (var i = 0; i < num_points; i++) {
+    var c = Math.floor(num_classes * Math.random());
+    var x = centers[c][0] + std * randn();
+    var y = centers[c][1] + std * randn();
+    points.push([x, y, c]);
+  }
+  return points;
+}
+
 function draw_points(ctx, points, colors) {
   for (var i = 0; i < points.length; i++) {
     var x = points[i][0];
