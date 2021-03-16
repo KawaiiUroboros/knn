@@ -52,7 +52,7 @@ function main() {
   // var k = 1;
 
   var state = {
-    num_classes: 4,
+    num_classes: 10,
     num_points: 60,
     cluster_std: 50,
     metric: l2_distance,
